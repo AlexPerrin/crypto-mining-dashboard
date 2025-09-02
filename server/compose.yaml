@@ -1,0 +1,33 @@
+services:
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      -  --config.file=/etc/prometheus/prometheus.yml
+      -  --storage.tsdb.path=/prometheus
+      - '--storage.tsdb.retention.time=5y'
+      - '--storage.tsdb.retention.size=50GB'
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/config:/etc/prometheus
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+    volumes:
+      - ./grafana/config:/etc/grafana/provisioning/datasources
+      - grafana_data:/var/lib/grafana
+    
+volumes:
+  prometheus_data:
+  grafana_data:

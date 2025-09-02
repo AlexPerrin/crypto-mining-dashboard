@@ -1,0 +1,44 @@
+services:
+
+  nvidia-gpu-exporter:
+    image: utkuozdemir/nvidia_gpu_exporter:1.2.1
+    container_name: nvidia-gpu-exporter
+    restart: unless-stopped
+    ports:
+      - 9835:9835
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+
+  ethermine-exporter:
+    image: hon95/prometheus-ethermine-exporter
+    environment:
+      - TZ=America/Toronto
+    ports:
+      - 8080:8080
+
+# Alternative Nvidia exporter
+#  dcgm-exporter:
+#    image: nvidia/dcgm-exporter:4.4.0-4.5.0-ubuntu22.04
+#    container_name: dcgm-exporter
+#    restart: unless-stopped
+#    ports:
+#      - 9400:9400
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: all
+#              capabilities: [gpu]
+#    environment:
+#      - DCGM_EXPORTER_LISTEN=0.0.0.0:9400
+#      - DCGM_EXPORTER_KUBERNETES=false
+#    cap_add:
+#      - SYS_ADMIN
